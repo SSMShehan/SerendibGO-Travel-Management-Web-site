@@ -164,6 +164,15 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Root endpoint for simple verification
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'SerendibGo Backend is responding!',
+    version: '1.0.0'
+  });
+});
+
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
