@@ -126,15 +126,13 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.indexOf(origin) === -1) {
-      // In development, you might want to allow all temporarily if facing issues, 
-      // but strictly checking is better. 
-      // For now, if we match the hardcoded list OR the env var, we are good.
-      // Let's implement a simpler dynamic check for vercel deployments if needed.
-      var msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
+    // Allow any Vercel deployment (Preview or Production)
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
+      return callback(null, true);
     }
-    return callback(null, true);
+
+    var msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+    return callback(new Error(msg), false);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
