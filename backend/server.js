@@ -5,6 +5,9 @@ require('dotenv').config();
 if (!process.env.JWT_SECRET) {
   process.env.JWT_SECRET = 'your-super-secret-jwt-key-change-this-in-production';
 }
+if (!process.env.FRONTEND_URL) {
+  process.env.FRONTEND_URL = 'https://serendib-go-travel-management-web-s-weld.vercel.app';
+}
 if (!process.env.STRIPE_SECRET_KEY) {
   console.warn('STRIPE_SECRET_KEY is not set in environment variables');
 }
