@@ -127,7 +127,7 @@ export const VehicleProvider = ({ children }) => {
   // API Base URL
   // const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'; 
   // Use centralized config instead:
-  const API_BASE_URL_CONFIG = (import.meta.env.VITE_API_URL || 'https://serendib-go-travel-management-web-site-2q8263j1g.vercel.app').replace(/\/$/, '');
+  const API_BASE_URL_CONFIG = (import.meta.env.VITE_API_URL || 'https://serendib-go-travel-management-web-s.vercel.app').replace(/\/$/, '');
   const API_ROOT = API_BASE_URL_CONFIG + '/api';
 
   // Get auth token

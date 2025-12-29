@@ -334,8 +334,14 @@ const startServer = async () => {
 };
 
 // Only start server if run directly (not imported as a module by Vercel)
+// Only start server if run directly (not imported as a module by Vercel)
 if (require.main === module) {
   startServer();
+} else {
+  // For Vercel/Serverless: Ensure DB is connected for every request
+  // We can't use top-level await here, so we wrap the app handler
+  // or simply call connectDB (Vercel will reuse the frozen process with the connection)
+  connectDB().catch(err => console.error('Vercel DB connection failed', err));
 }
 
 module.exports = app;
