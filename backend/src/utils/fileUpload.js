@@ -3,15 +3,26 @@ const path = require('path');
 const fs = require('fs');
 
 // Ensure uploads directory exists
-const uploadsDir = path.join(__dirname, '../../../uploads');
+// In Vercel (production), write to /tmp instead of root
+const isProduction = process.env.NODE_ENV === 'production';
+const rootDir = isProduction ? '/tmp' : path.join(__dirname, '../../../');
+const uploadsDir = path.join(rootDir, 'uploads');
 const vehicleImagesDir = path.join(uploadsDir, 'vehicles');
 
 if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+  try {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  } catch (err) {
+    console.error('Failed to create uploads dir:', err);
+  }
 }
 
 if (!fs.existsSync(vehicleImagesDir)) {
-  fs.mkdirSync(vehicleImagesDir, { recursive: true });
+  try {
+    fs.mkdirSync(vehicleImagesDir, { recursive: true });
+  } catch (err) {
+    console.error('Failed to create vehicle images dir:', err);
+  }
 }
 
 // Configure multer for vehicle images
@@ -50,9 +61,9 @@ const vehicleImageUpload = multer({
 // Function to save files from memory storage to disk
 const saveMemoryFilesToDisk = async (files, vehicleId) => {
   if (!files || files.length === 0) return [];
-  
+
   const savedFiles = [];
-  
+
   for (const file of files) {
     if (file.mimetype.startsWith('image/')) {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -60,13 +71,13 @@ const saveMemoryFilesToDisk = async (files, vehicleId) => {
       const name = path.basename(file.originalname, ext);
       const filename = `${name}-${uniqueSuffix}${ext}`;
       const filepath = path.join(vehicleImagesDir, filename);
-      
+
       // Write buffer to file
       fs.writeFileSync(filepath, file.buffer);
-      
+
       // Create URL for the saved file
       const fileUrl = `/uploads/vehicles/${filename}`;
-      
+
       savedFiles.push({
         url: fileUrl,
         filename: filename,
@@ -76,7 +87,7 @@ const saveMemoryFilesToDisk = async (files, vehicleId) => {
       });
     }
   }
-  
+
   return savedFiles;
 };
 
@@ -85,7 +96,7 @@ const deleteFileFromDisk = (fileUrl) => {
   try {
     const filename = path.basename(fileUrl);
     const filepath = path.join(vehicleImagesDir, filename);
-    
+
     if (fs.existsSync(filepath)) {
       fs.unlinkSync(filepath);
       return true;

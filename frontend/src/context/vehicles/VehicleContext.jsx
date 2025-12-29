@@ -38,34 +38,34 @@ const vehicleReducer = (state, action) => {
         ...state,
         loading: action.payload
       };
-      
+
     case VehicleActionTypes.SET_ERROR:
       return {
         ...state,
         error: action.payload,
         loading: false
       };
-      
+
     case VehicleActionTypes.CLEAR_ERROR:
       return {
         ...state,
         error: null
       };
-      
+
     case VehicleActionTypes.SET_VEHICLES:
       return {
         ...state,
         vehicles: action.payload,
         loading: false
       };
-      
+
     case VehicleActionTypes.ADD_VEHICLE:
       return {
         ...state,
         vehicles: [...state.vehicles, action.payload],
         loading: false
       };
-      
+
     case VehicleActionTypes.UPDATE_VEHICLE:
       return {
         ...state,
@@ -74,28 +74,28 @@ const vehicleReducer = (state, action) => {
         ),
         loading: false
       };
-      
+
     case VehicleActionTypes.DELETE_VEHICLE:
       return {
         ...state,
         vehicles: state.vehicles.filter(vehicle => vehicle._id !== action.payload),
         loading: false
       };
-      
+
     case VehicleActionTypes.SET_BOOKINGS:
       return {
         ...state,
         bookings: action.payload,
         loading: false
       };
-      
+
     case VehicleActionTypes.ADD_BOOKING:
       return {
         ...state,
         bookings: [...state.bookings, action.payload],
         loading: false
       };
-      
+
     case VehicleActionTypes.UPDATE_BOOKING:
       return {
         ...state,
@@ -104,14 +104,14 @@ const vehicleReducer = (state, action) => {
         ),
         loading: false
       };
-      
+
     case VehicleActionTypes.SET_STATS:
       return {
         ...state,
         stats: action.payload,
         loading: false
       };
-      
+
     default:
       return state;
   }
@@ -123,19 +123,22 @@ const VehicleContext = createContext();
 // Provider Component
 export const VehicleProvider = ({ children }) => {
   const [state, dispatch] = useReducer(vehicleReducer, initialState);
-  
+
   // API Base URL
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-  
+  // const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'; 
+  // Use centralized config instead:
+  const API_BASE_URL_CONFIG = (import.meta.env.VITE_API_URL || 'https://serendib-go-travel-management-web-s.vercel.app').replace(/\/$/, '');
+  const API_ROOT = API_BASE_URL_CONFIG + '/api';
+
   // Get auth token
   const getAuthToken = () => {
     return localStorage.getItem('token');
   };
-  
+
   // API request helper
   const apiRequest = async (url, options = {}) => {
     const token = getAuthToken();
-    
+
     const config = {
       headers: {
         'Content-Type': 'application/json',
@@ -144,17 +147,17 @@ export const VehicleProvider = ({ children }) => {
       },
       ...options
     };
-    
-    const response = await fetch(`${API_BASE_URL}${url}`, config);
-    
+
+    const response = await fetch(`${API_ROOT}${url}`, config);
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
     }
-    
+
     return response.json();
   };
-  
+
   // Vehicle Actions
   const vehicleActions = {
     // Get all vehicles for the current user
@@ -162,7 +165,7 @@ export const VehicleProvider = ({ children }) => {
       try {
         dispatch({ type: VehicleActionTypes.SET_LOADING, payload: true });
         const data = await apiRequest('/vehicles/my-vehicles');
-        
+
         if (data.status === 'success') {
           dispatch({ type: VehicleActionTypes.SET_VEHICLES, payload: data.data.vehicles });
         } else {
@@ -174,13 +177,13 @@ export const VehicleProvider = ({ children }) => {
         throw error;
       }
     },
-    
+
     // Get a single vehicle
     getVehicle: async (vehicleId) => {
       try {
         dispatch({ type: VehicleActionTypes.SET_LOADING, payload: true });
         const data = await apiRequest(`/vehicles/${vehicleId}`);
-        
+
         if (data.status === 'success') {
           return data.data.vehicle;
         } else {
@@ -192,15 +195,15 @@ export const VehicleProvider = ({ children }) => {
         throw error;
       }
     },
-    
+
     // Add a new vehicle
     addVehicle: async (vehicleData) => {
       try {
         dispatch({ type: VehicleActionTypes.SET_LOADING, payload: true });
-        
+
         // Handle file uploads
         const formData = new FormData();
-        
+
         Object.keys(vehicleData).forEach(key => {
           if (key === 'images' && Array.isArray(vehicleData[key])) {
             vehicleData[key].forEach((image, index) => {
@@ -227,7 +230,7 @@ export const VehicleProvider = ({ children }) => {
             formData.append(key, vehicleData[key]);
           }
         });
-        
+
         const data = await apiRequest('/vehicles', {
           method: 'POST',
           headers: {
@@ -235,7 +238,7 @@ export const VehicleProvider = ({ children }) => {
           },
           body: formData
         });
-        
+
         if (data.status === 'success') {
           dispatch({ type: VehicleActionTypes.ADD_VEHICLE, payload: data.data.vehicle });
           toast.success('Vehicle added successfully!');
@@ -249,17 +252,17 @@ export const VehicleProvider = ({ children }) => {
         throw error;
       }
     },
-    
+
     // Update a vehicle
     updateVehicle: async (vehicleId, vehicleData) => {
       try {
         dispatch({ type: VehicleActionTypes.SET_LOADING, payload: true });
-        
+
         const data = await apiRequest(`/vehicles/${vehicleId}`, {
           method: 'PUT',
           body: JSON.stringify(vehicleData)
         });
-        
+
         if (data.status === 'success') {
           dispatch({ type: VehicleActionTypes.UPDATE_VEHICLE, payload: data.data.vehicle });
           toast.success('Vehicle updated successfully!');
@@ -273,16 +276,16 @@ export const VehicleProvider = ({ children }) => {
         throw error;
       }
     },
-    
+
     // Delete a vehicle
     deleteVehicle: async (vehicleId) => {
       try {
         dispatch({ type: VehicleActionTypes.SET_LOADING, payload: true });
-        
+
         const data = await apiRequest(`/vehicles/${vehicleId}`, {
           method: 'DELETE'
         });
-        
+
         if (data.status === 'success') {
           dispatch({ type: VehicleActionTypes.DELETE_VEHICLE, payload: vehicleId });
           toast.success('Vehicle deleted successfully!');
@@ -296,19 +299,19 @@ export const VehicleProvider = ({ children }) => {
       }
     }
   };
-  
+
   // Booking Actions
   const bookingActions = {
     // Get all bookings for the current user's vehicles
     getMyBookings: async (params = {}) => {
       try {
         dispatch({ type: VehicleActionTypes.SET_LOADING, payload: true });
-        
+
         const queryString = new URLSearchParams(params).toString();
         const url = `/vehicle-bookings/my-bookings${queryString ? `?${queryString}` : ''}`;
-        
+
         const data = await apiRequest(url);
-        
+
         if (data.status === 'success') {
           dispatch({ type: VehicleActionTypes.SET_BOOKINGS, payload: data.data.bookings });
           return data.data;
@@ -321,13 +324,13 @@ export const VehicleProvider = ({ children }) => {
         throw error;
       }
     },
-    
+
     // Get a single booking
     getBooking: async (bookingId) => {
       try {
         dispatch({ type: VehicleActionTypes.SET_LOADING, payload: true });
         const data = await apiRequest(`/vehicle-bookings/${bookingId}`);
-        
+
         if (data.status === 'success') {
           return data.data.booking;
         } else {
@@ -339,17 +342,17 @@ export const VehicleProvider = ({ children }) => {
         throw error;
       }
     },
-    
+
     // Update booking status
     updateBookingStatus: async (bookingId, statusData) => {
       try {
         dispatch({ type: VehicleActionTypes.SET_LOADING, payload: true });
-        
+
         const data = await apiRequest(`/vehicle-bookings/${bookingId}/status`, {
           method: 'PUT',
           body: JSON.stringify(statusData)
         });
-        
+
         if (data.status === 'success') {
           dispatch({ type: VehicleActionTypes.UPDATE_BOOKING, payload: data.data.booking });
           toast.success('Booking status updated successfully!');
@@ -364,7 +367,7 @@ export const VehicleProvider = ({ children }) => {
       }
     }
   };
-  
+
   // Stats Actions
   const statsActions = {
     // Get dashboard stats
@@ -372,7 +375,7 @@ export const VehicleProvider = ({ children }) => {
       try {
         dispatch({ type: VehicleActionTypes.SET_LOADING, payload: true });
         const data = await apiRequest('/vehicle-owners/stats');
-        
+
         if (data.status === 'success') {
           dispatch({ type: VehicleActionTypes.SET_STATS, payload: data.data.stats });
           return data.data.stats;
@@ -386,17 +389,17 @@ export const VehicleProvider = ({ children }) => {
       }
     }
   };
-  
+
   // Utility Functions
   const vehicleUtils = {
     // Calculate vehicle rating
     calculateRating: (vehicle) => {
       if (!vehicle.ratings || vehicle.reviewCount === 0) return 0;
-      
+
       const { overall, cleanliness, comfort, driver, value } = vehicle.ratings;
       return (overall + cleanliness + comfort + driver + value) / 5;
     },
-    
+
     // Get vehicle status color
     getStatusColor: (status) => {
       const colors = {
@@ -409,44 +412,44 @@ export const VehicleProvider = ({ children }) => {
       };
       return colors[status] || colors.pending;
     },
-    
+
     // Format price
     formatPrice: (price, currency = 'LKR') => {
       return `${currency} ${price.toLocaleString()}`;
     },
-    
+
     // Check if vehicle is available
     isVehicleAvailable: (vehicle, startDate, endDate) => {
       if (!vehicle.availability.isAvailable || vehicle.status !== 'active') {
         return false;
       }
-      
+
       // Additional availability logic can be added here
       return true;
     }
   };
-  
+
   // Clear error
   const clearError = () => {
     dispatch({ type: VehicleActionTypes.CLEAR_ERROR });
   };
-  
+
   const value = {
     // State
     ...state,
-    
+
     // Actions
     vehicleActions,
     bookingActions,
     statsActions,
-    
+
     // Utils
     vehicleUtils,
-    
+
     // Helpers
     clearError
   };
-  
+
   return (
     <VehicleContext.Provider value={value}>
       {children}

@@ -1,18 +1,15 @@
 // Load environment variables first
 require('dotenv').config();
 
-// Set environment variables if not defined
+// Set environment variables if not defined (Fallbacks for Vercel if env vars are missing)
 if (!process.env.JWT_SECRET) {
-  console.warn('JWT_SECRET is not set in environment variables');
+  process.env.JWT_SECRET = 'your-super-secret-jwt-key-change-this-in-production';
 }
 if (!process.env.STRIPE_SECRET_KEY) {
   console.warn('STRIPE_SECRET_KEY is not set in environment variables');
 }
-if (!process.env.STRIPE_WEBHOOK_SECRET) {
-  console.warn('STRIPE_WEBHOOK_SECRET is not set in environment variables');
-}
 if (!process.env.MONGODB_URI) {
-  console.warn('MONGODB_URI is not set in environment variables');
+  process.env.MONGODB_URI = 'mongodb+srv://admin:admin123@serandibgo.izvdsyx.mongodb.net/serendibgo?appName=serandibgo';
 }
 
 // Debug environment variables
@@ -327,7 +324,10 @@ const startServer = async () => {
   });
 };
 
-startServer();
+// Only start server if run directly (not imported as a module by Vercel)
+if (require.main === module) {
+  startServer();
+}
 
 module.exports = app;
 
