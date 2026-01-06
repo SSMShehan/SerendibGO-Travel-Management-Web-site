@@ -140,7 +140,7 @@ const Home = () => {
               poster="/glassmorphism-bg-1.jpg"
               onError={() => setVideoError(true)}
             >
-              <source src="https://ik.imagekit.io/serandibGo/homepage-background.mp4?updatedAt=1767710095928" type="video/mp4" />
+              <source src="/videos/homepage-background.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           ) : (
