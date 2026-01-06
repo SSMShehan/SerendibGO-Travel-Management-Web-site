@@ -6,17 +6,17 @@ import siteDataService from '../../services/siteDataService'
 
 const Chatbot = () => {
   const { user } = useAuth()
-  const { 
-    messages, 
-    isLoading, 
-    error, 
-    sendMessage, 
+  const {
+    messages,
+    isLoading,
+    error,
+    sendMessage,
     clearHistory,
     isOpen,
     openChatbot,
     closeChatbot
   } = useChatbot()
-  
+
   const [inputMessage, setInputMessage] = useState('')
   const [showScrollButton, setShowScrollButton] = useState(false)
   const messagesEndRef = useRef(null)
@@ -58,7 +58,7 @@ const Chatbot = () => {
 
     // Fetch real site data for AI context
     const siteData = await siteDataService.getSiteData()
-    
+
     // Prepare user context with real data
     const userContext = {
       user: user,
@@ -76,7 +76,7 @@ const Chatbot = () => {
       <button
         onClick={() => openChatbot({ user })}
         className="chatbot-button rounded-full text-white shadow-xl hover:scale-110 transition-all duration-300 flex items-center justify-center"
-        style={{ 
+        style={{
           opacity: '1 !important',
           visibility: 'visible !important',
           display: isOpen ? 'none' : 'flex',
@@ -84,16 +84,16 @@ const Chatbot = () => {
           bottom: '24px !important',
           right: '24px !important',
           zIndex: '9999 !important',
-          backgroundColor: '#3b82f6 !important',
+          backgroundColor: '#0D9488 !important',
           border: '2px solid #ffffff !important',
-          boxShadow: '0 0 15px rgba(59, 130, 246, 0.6) !important',
+          boxShadow: '0 0 15px rgba(13, 148, 136, 0.6) !important',
           animation: 'chatbotPulse 2s ease-in-out infinite !important',
           width: '56px !important',
           height: '56px !important'
         }}
       >
-        <MessageCircle className="w-6 h-6" style={{ 
-          opacity: '1 !important', 
+        <MessageCircle className="w-6 h-6" style={{
+          opacity: '1 !important',
           visibility: 'visible !important',
           color: 'white !important'
         }} />
@@ -103,10 +103,10 @@ const Chatbot = () => {
       {isOpen && (
         <div className="fixed bottom-24 right-8 w-96 h-[500px] bg-base-100 rounded-xl shadow-2xl border border-base-300 z-50 flex flex-col">
           {/* Header */}
-          <div 
-            className="chatbot-header bg-blue-600 text-white p-4 rounded-t-xl flex items-center justify-between"
+          <div
+            className="chatbot-header bg-primary-600 text-white p-4 rounded-t-xl flex items-center justify-between"
             style={{
-              backgroundColor: '#2563eb !important',
+              backgroundColor: '#0D9488 !important',
               color: 'white !important',
               padding: '16px !important',
               borderRadius: '12px 12px 0 0 !important',
@@ -142,7 +142,7 @@ const Chatbot = () => {
           </div>
 
           {/* Messages */}
-          <div 
+          <div
             ref={messagesContainerRef}
             className="flex-1 p-6 overflow-y-auto space-y-4 min-h-0 relative"
           >
@@ -152,17 +152,16 @@ const Chatbot = () => {
                 className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[280px] ${
-                    message.sender === 'user'
-                      ? 'user-message bg-blue-600 text-white p-4 rounded-2xl rounded-br-md shadow-lg border-2 border-blue-700'
+                  className={`max-w-[280px] ${message.sender === 'user'
+                      ? 'user-message bg-primary-600 text-white p-4 rounded-2xl rounded-br-md shadow-lg border-2 border-primary-700'
                       : message.isError
-                      ? 'bg-gradient-to-r from-error to-error-focus text-error-content p-4 rounded-2xl rounded-bl-md shadow-lg'
-                      : 'bg-gradient-to-r from-base-200 to-base-300 text-base-content p-4 rounded-2xl rounded-bl-md shadow-md border border-base-300'
-                  }`}
+                        ? 'bg-gradient-to-r from-error to-error-focus text-error-content p-4 rounded-2xl rounded-bl-md shadow-lg'
+                        : 'bg-gradient-to-r from-base-200 to-base-300 text-base-content p-4 rounded-2xl rounded-bl-md shadow-md border border-base-300'
+                    }`}
                   style={message.sender === 'user' ? {
-                    backgroundColor: '#2563eb !important',
+                    backgroundColor: '#0D9488 !important',
                     color: 'white !important',
-                    borderColor: '#1d4ed8 !important'
+                    borderColor: '#0F766E !important'
                   } : {}}
                 >
                   <div className="flex items-start space-x-3">
@@ -177,23 +176,21 @@ const Chatbot = () => {
                       </div>
                     )}
                     <div className="flex-1">
-                      <p 
-                        className={`text-sm leading-relaxed whitespace-pre-wrap break-words ${
-                          message.sender === 'user' ? 'text-white' : ''
-                        }`}
+                      <p
+                        className={`text-sm leading-relaxed whitespace-pre-wrap break-words ${message.sender === 'user' ? 'text-white' : ''
+                          }`}
                         style={message.sender === 'user' ? { color: 'white !important' } : {}}
                       >
                         {message.text}
                       </p>
-                      <span 
-                        className={`text-xs mt-1 block ${
-                          message.sender === 'user' ? 'text-white/80' : 'opacity-60'
-                        }`}
+                      <span
+                        className={`text-xs mt-1 block ${message.sender === 'user' ? 'text-white/80' : 'opacity-60'
+                          }`}
                         style={message.sender === 'user' ? { color: 'rgba(255, 255, 255, 0.8) !important' } : {}}
                       >
-                        {new Date(message.timestamp).toLocaleTimeString([], { 
-                          hour: '2-digit', 
-                          minute: '2-digit' 
+                        {new Date(message.timestamp).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit'
                         })}
                       </span>
                     </div>
@@ -201,7 +198,7 @@ const Chatbot = () => {
                 </div>
               </div>
             ))}
-            
+
             {/* Loading indicator */}
             {isLoading && (
               <div className="flex justify-start">
@@ -218,15 +215,15 @@ const Chatbot = () => {
                 </div>
               </div>
             )}
-            
+
             {/* Auto-scroll anchor */}
             <div ref={messagesEndRef} />
-            
+
             {/* Scroll to bottom button */}
             {showScrollButton && (
               <button
                 onClick={scrollToBottom}
-                className="absolute bottom-4 right-4 w-10 h-10 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all duration-200 flex items-center justify-center z-10"
+                className="absolute bottom-4 right-4 w-10 h-10 bg-primary-600 text-white rounded-full shadow-lg hover:bg-primary-700 transition-all duration-200 flex items-center justify-center z-10"
                 title="Scroll to bottom"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
