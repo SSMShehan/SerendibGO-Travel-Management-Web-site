@@ -8,9 +8,7 @@
     "dev": "nodemon server.js",
     "seed:tours": "node src/scripts/seedTours.js",
     "seed:users": "node src/scripts/seedUsers.js",
-    "seed:vehicles": "node src/scripts/seedVehicles.js",
-    "seed:hotels": "node src/scripts/seedHotels.js",
-    "seed:all": "npm run seed:users && npm run seed:tours && npm run seed:vehicles && npm run seed:hotels"
+    "seed:all": "npm run seed:users && npm run seed:tours"
   },
   "keywords": [
     "tourism",
