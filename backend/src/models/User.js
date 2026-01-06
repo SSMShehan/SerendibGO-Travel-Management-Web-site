@@ -251,7 +251,7 @@ userSchema.methods.getSignedJwtToken = function () {
     },
     process.env.JWT_SECRET,
     {
-      expiresIn: process.env.JWT_EXPIRE
+      expiresIn: process.env.JWT_EXPIRE || '7d'
     }
   );
 };
