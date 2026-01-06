@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform, useSpring, useInView } from 'framer-motion'
 import {
@@ -31,10 +31,22 @@ const staggerContainer = {
 
 const Home = () => {
   const containerRef = useRef(null)
+  const videoRef = useRef(null)
+  const [videoError, setVideoError] = useState(false)
   const { scrollY } = useScroll()
   const y1 = useTransform(scrollY, [0, 500], [0, 200])
   const y2 = useTransform(scrollY, [0, 500], [0, -150])
   const opacity = useTransform(scrollY, [0, 300], [1, 0])
+
+  // Manually trigger video play to handle autoplay restrictions
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.play().catch((error) => {
+        console.error('Video autoplay failed:', error)
+        setVideoError(true)
+      })
+    }
+  }, [])
 
   const features = [
     {
@@ -98,16 +110,27 @@ const Home = () => {
           className="absolute inset-0 z-0"
         >
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 z-10" />
-          <video
-            className="w-full h-full object-cover scale-110"
-            autoPlay
-            muted
-            loop
-            playsInline
-          >
-            <source src="/videos/homepage-background.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+          {!videoError ? (
+            <video
+              ref={videoRef}
+              className="w-full h-full object-cover scale-110"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              poster="/glassmorphism-bg-1.jpg"
+              onError={() => setVideoError(true)}
+            >
+              <source src="/videos/homepage-background.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          ) : (
+            <div
+              className="w-full h-full bg-cover bg-center scale-110"
+              style={{ backgroundImage: 'url("/glassmorphism-bg-1.jpg")' }}
+            />
+          )}
         </motion.div>
 
         {/* Hero Content */}
