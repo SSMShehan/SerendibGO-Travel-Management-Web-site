@@ -75,6 +75,14 @@ const Home = () => {
   const [trendingTours, setTrendingTours] = useState([])
   const navigate = useNavigate()
 
+  // Map keywords to local images to ensure we show valid images for our top 3 tours
+  const imageOverrides = {
+    'Yala': '/glassmorphism-bg-3.jpg', // Placeholder for Yala
+    'Heritage': '/traditional-stilt-fishermen-sri-lanka.jpg',
+    'Ella': '/glassmorphism-bg-5.jpg', // Placeholder for Ella
+    'Train': '/glassmorphism-bg-5.jpg'
+  }
+
   useEffect(() => {
     const fetchTrendingTours = async () => {
       try {
@@ -389,6 +397,20 @@ const TiltCard = ({ feature, index }) => (
 const TourCard = ({ tour, index }) => {
   const navigate = useNavigate()
 
+  // Helper to find override image
+  const getOverrideImage = (title) => {
+    if (!title) return null;
+    if (title.includes('Yala')) return '/glassmorphism-bg-3.jpg'; // Using a nature-like bg for Yala
+    if (title.includes('Heritage') || title.includes('Sigiriya')) return '/traditional-stilt-fishermen-sri-lanka.jpg';
+    if (title.includes('Ella') || title.includes('Train')) return '/glassmorphism-bg-5.jpg'; // Using a scenic bg for Ella
+    return null;
+  }
+
+  const displayImage = getOverrideImage(tour.title) ||
+    (tour.images && tour.images.length > 0
+      ? (typeof tour.images[0] === 'string' ? tour.images[0] : (tour.images[0]?.url || '/placeholder-image.jpg'))
+      : '/placeholder-image.jpg');
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -400,9 +422,7 @@ const TourCard = ({ tour, index }) => {
     >
       <div className="absolute inset-0 bg-surface-800">
         <img
-          src={tour.images && tour.images.length > 0
-            ? (typeof tour.images[0] === 'string' ? tour.images[0] : (tour.images[0]?.url || '/placeholder-image.jpg'))
-            : '/placeholder-image.jpg'}
+          src={displayImage}
           alt={tour.title}
           className="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700 ease-out"
           onError={(e) => {
