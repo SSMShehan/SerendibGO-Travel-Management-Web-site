@@ -67,7 +67,6 @@ const customTripRoutes = require('./src/routes/customTrips');
 const notificationRoutes = require('./src/routes/notifications');
 
 // Vehicle routes
-// Vehicle routes
 const vehicleRoutes = require('./src/routes/vehicles');
 const vehicleBookingRoutes = require('./src/routes/vehicles/vehicleBookings');
 const vehicleAvailabilityRoutes = require('./src/routes/vehicles/availability');
@@ -78,9 +77,6 @@ const tripRoutes = require('./src/routes/vehicles/trips');
 const driverRoutes = require('./src/routes/vehicles/drivers');
 const maintenanceRoutes = require('./src/routes/vehicles/maintenance');
 const revenueRoutes = require('./src/routes/vehicles/revenue');
-
-// Seed routes (For remote execution like Vercel)
-const seedRoutes = require('./src/routes/seed');
 
 // Import middleware
 const { errorHandler } = require('./src/middleware/errorHandler');
@@ -209,11 +205,6 @@ app.use('/api/vehicles', vehicleIntegrationRoutes);
 // Sample vehicles route (fallback when database is not available)
 const sampleVehiclesRoute = require('./src/routes/sampleVehicles');
 app.use('/api/sample-vehicles', sampleVehiclesRoute);
-
-// Seed routes (For remote execution like Vercel)
-const seedRoutes = require('./src/routes/seed');
-app.use('/api/seed', seedRoutes);
-
 app.use('/api/vehicle-bookings', vehicleBookingRoutes);
 app.use('/api/vehicle-booking-requests', vehicleBookingRequestRoutes);
 app.use('/api/trips', tripRoutes);

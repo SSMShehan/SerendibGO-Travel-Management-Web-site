@@ -61,11 +61,11 @@ const seedVehicles = async () => {
         });
 
         console.log('\nVehicle seeding completed successfully!');
-        // process.exit(0);
+        process.exit(0);
 
     } catch (error) {
         console.error('Error seeding vehicles:', error);
-        throw error;
+        process.exit(1);
     }
 };
 

@@ -57,11 +57,11 @@ const seedHotels = async () => {
         });
 
         console.log('\nHotel seeding completed successfully!');
-        // process.exit(0);
+        process.exit(0);
 
     } catch (error) {
         console.error('Error seeding hotels:', error);
-        throw error;
+        process.exit(1);
     }
 };
 
