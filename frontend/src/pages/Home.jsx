@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import api from '../services/api'
 import { motion, useScroll, useTransform, useSpring, useInView } from 'framer-motion'
 import {
   MapPin,
@@ -71,32 +72,22 @@ const Home = () => {
     }
   ]
 
-  const trendingTours = [
-    {
-      id: 1,
-      title: "Wilderness of Yala",
-      duration: "3 Days / 2 Nights",
-      price: "$450",
-      image: "https://images.unsplash.com/photo-1547975172-a8c628e46950?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      description: "Spot leopards and elephants in their natural habitat."
-    },
-    {
-      id: 2,
-      title: "Cultural Heritage Triangle",
-      duration: "5 Days / 4 Nights",
-      price: "$650",
-      image: "/traditional-stilt-fishermen-sri-lanka.jpg",
-      description: "Explore ancient cities, temples, and the Lion Rock fortress."
-    },
-    {
-      id: 3,
-      title: "Ella Mountain Retreat",
-      duration: "2 Days / 1 Night",
-      price: "$250",
-      image: "https://images.unsplash.com/photo-1588665552328-93527d6ea573?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      description: "Scenic train rides and hiking through misty tea plantations."
+  const [trendingTours, setTrendingTours] = useState([])
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const fetchTrendingTours = async () => {
+      try {
+        const response = await api.get('/tours?limit=3')
+        if (response.data.success && response.data.data) {
+          setTrendingTours(response.data.data.slice(0, 3))
+        }
+      } catch (error) {
+        console.error('Failed to fetch trending tours:', error)
+      }
     }
-  ]
+    fetchTrendingTours()
+  }, [])
 
   const stats = [
     { number: "500+", label: "Curated Tours" },
@@ -395,38 +386,49 @@ const TiltCard = ({ feature, index }) => (
   </motion.div>
 )
 
-const TourCard = ({ tour, index }) => (
-  <motion.div
-    initial={{ opacity: 0, scale: 0.9 }}
-    whileInView={{ opacity: 1, scale: 1 }}
-    viewport={{ once: true }}
-    whileHover={{ y: -10 }}
-    className="group relative overflow-hidden rounded-3xl h-[450px]"
-  >
-    <div className="absolute inset-0 bg-surface-800">
-      <img
-        src={tour.image}
-        alt={tour.title}
-        className="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700 ease-out"
-      />
-    </div>
+const TourCard = ({ tour, index }) => {
+  const navigate = useNavigate()
 
-    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent p-8 flex flex-col justify-end">
-      <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-        <span className="text-secondary-400 font-bold text-xs uppercase tracking-wider mb-2 block">
-          {tour.duration}
-        </span>
-        <h3 className="text-2xl font-bold text-white mb-2">{tour.title}</h3>
-        <p className="text-white/80 line-clamp-2 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
-          {tour.description}
-        </p>
-        <div className="flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-200">
-          <span className="text-xl font-bold text-white">{tour.price}</span>
-          <span className="text-sm font-bold text-white underline decoration-secondary-500 underline-offset-4 cursor-pointer">View Details</span>
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      whileHover={{ y: -10 }}
+      onClick={() => navigate(`/tours/${tour._id}`)}
+      className="group relative overflow-hidden rounded-3xl h-[450px] cursor-pointer"
+    >
+      <div className="absolute inset-0 bg-surface-800">
+        <img
+          src={tour.images && tour.images.length > 0
+            ? (typeof tour.images[0] === 'string' ? tour.images[0] : (tour.images[0]?.url || '/placeholder-image.jpg'))
+            : '/placeholder-image.jpg'}
+          alt={tour.title}
+          className="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700 ease-out"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
+          }}
+        />
+      </div>
+
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent p-8 flex flex-col justify-end">
+        <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+          <span className="text-secondary-400 font-bold text-xs uppercase tracking-wider mb-2 block">
+            {tour.duration} Days
+          </span>
+          <h3 className="text-2xl font-bold text-white mb-2">{tour.title}</h3>
+          <p className="text-white/80 line-clamp-2 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+            {tour.shortDescription || tour.description}
+          </p>
+          <div className="flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-200">
+            <span className="text-xl font-bold text-white">${tour.price}</span>
+            <span className="text-sm font-bold text-white underline decoration-secondary-500 underline-offset-4">View Details</span>
+          </div>
         </div>
       </div>
-    </div>
-  </motion.div>
-)
+    </motion.div>
+  )
+}
 
 export default Home
