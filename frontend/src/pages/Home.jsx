@@ -71,6 +71,33 @@ const Home = () => {
     }
   ]
 
+  const trendingTours = [
+    {
+      id: 1,
+      title: "Wilderness of Yala",
+      duration: "3 Days / 2 Nights",
+      price: "$450",
+      image: "https://images.unsplash.com/photo-1547975172-a8c628e46950?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      description: "Spot leopards and elephants in their natural habitat."
+    },
+    {
+      id: 2,
+      title: "Cultural Heritage Triangle",
+      duration: "5 Days / 4 Nights",
+      price: "$650",
+      image: "/traditional-stilt-fishermen-sri-lanka.jpg",
+      description: "Explore ancient cities, temples, and the Lion Rock fortress."
+    },
+    {
+      id: 3,
+      title: "Ella Mountain Retreat",
+      duration: "2 Days / 1 Night",
+      price: "$250",
+      image: "https://images.unsplash.com/photo-1588665552328-93527d6ea573?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      description: "Scenic train rides and hiking through misty tea plantations."
+    }
+  ]
+
   const stats = [
     { number: "500+", label: "Curated Tours" },
     { number: "15k+", label: "Happy Travelers" },
@@ -259,8 +286,8 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((item) => (
-              <TourCard key={item} index={item} />
+            {trendingTours.map((tour, index) => (
+              <TourCard key={tour.id} tour={tour} index={index} />
             ))}
           </div>
 
@@ -368,7 +395,7 @@ const TiltCard = ({ feature, index }) => (
   </motion.div>
 )
 
-const TourCard = ({ index }) => (
+const TourCard = ({ tour, index }) => (
   <motion.div
     initial={{ opacity: 0, scale: 0.9 }}
     whileInView={{ opacity: 1, scale: 1 }}
@@ -377,22 +404,25 @@ const TourCard = ({ index }) => (
     className="group relative overflow-hidden rounded-3xl h-[450px]"
   >
     <div className="absolute inset-0 bg-surface-800">
-      {/* Placeholder for Tour Image - In production use real images */}
-      <div className={`w-full h-full bg-gradient-to-br ${index === 1 ? 'from-primary-700 to-primary-900' : index === 2 ? 'from-secondary-700 to-secondary-900' : 'from-accent-700 to-accent-900'} opacity-80 group-hover:scale-110 transition-transform duration-700 ease-out`} />
+      <img
+        src={tour.image}
+        alt={tour.title}
+        className="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700 ease-out"
+      />
     </div>
 
-    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-8 flex flex-col justify-end">
+    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent p-8 flex flex-col justify-end">
       <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
         <span className="text-secondary-400 font-bold text-xs uppercase tracking-wider mb-2 block">
-          7 Days / 6 Nights
+          {tour.duration}
         </span>
-        <h3 className="text-2xl font-bold text-white mb-2">Wilderness {index}</h3>
-        <p className="text-white/70 line-clamp-2 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
-          Explore the untouched beauty of Sri Lanka's national parks, from elephants to leopards.
+        <h3 className="text-2xl font-bold text-white mb-2">{tour.title}</h3>
+        <p className="text-white/80 line-clamp-2 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+          {tour.description}
         </p>
         <div className="flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-200">
-          <span className="text-xl font-bold text-white">$1,250</span>
-          <span className="text-sm font-bold text-white underline decoration-secondary-500 underline-offset-4">View Details</span>
+          <span className="text-xl font-bold text-white">{tour.price}</span>
+          <span className="text-sm font-bold text-white underline decoration-secondary-500 underline-offset-4 cursor-pointer">View Details</span>
         </div>
       </div>
     </div>
